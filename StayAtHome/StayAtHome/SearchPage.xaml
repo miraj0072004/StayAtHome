@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              x:Class="StayAtHome.SearchPage">
     <ContentPage.BindingContext>
-        <viewModels:SearchViewModel/>
+        <viewModels:SearchViewModel x:Name="searchViewModel"/>
     </ContentPage.BindingContext>
     <ContentPage.Content>
         <StackLayout>
@@ -22,16 +22,16 @@
                 <ListView x:Name="AddressListView" ItemsSource="{Binding Addresses}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextCell Text="{Binding .}"></TextCell>
+                            <TextCell Text="{Binding .}" Command="{Binding Source={x:Reference searchViewModel}, Path=ChooseAddressCommand}"></TextCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollView>
-            <Button Text="Add">
+            <Button Text="Add" HorizontalOptions="Center" IsEnabled="False" Clicked="Button_OnClicked">
                 <Button.Triggers>
-                    <!--<DataTrigger TargetType="Button" Binding="{StaticResource AddressListView, }">
-
-                    </DataTrigger>-->
+                    <DataTrigger TargetType="Button" Binding="{Binding AddressChosen}" Value="True">
+                        <Setter Property="IsEnabled" Value="True"></Setter>
+                    </DataTrigger>
                 </Button.Triggers>
             </Button>
         </StackLayout>

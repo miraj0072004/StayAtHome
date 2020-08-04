@@ -8,8 +8,8 @@
 
     <StackLayout VerticalOptions="CenterAndExpand">
         <!-- Place new controls here -->
-        <Button Text="Add New" Clicked="Button_OnClicked"></Button>
-        <Button Text="Use Existing"></Button>
+        <Button Text="Add New" Clicked="Button_OnClicked" HorizontalOptions="Center"></Button>
+        <Button Text="Use Existing" HorizontalOptions="Center"></Button>
         
     </StackLayout>
 

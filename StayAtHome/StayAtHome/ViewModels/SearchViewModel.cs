@@ -14,11 +14,15 @@ namespace StayAtHome.ViewModels
         public SearchViewModel()
         {
             SearchCommand = new SearchCommand(this);
+            ChooseAddressCommand = new ChooseAddressCommand(this);
             Addresses = new List<string>();
         }
 
         private string _searchTerm;
         private List<string> _addresses;
+        private bool _addressChosen;
+        
+
 
         public string SearchTerm
         {
@@ -40,10 +44,27 @@ namespace StayAtHome.ViewModels
             }
         }
 
+        public bool AddressChosen
+        {
+            get { return _addressChosen; }
+            set
+            {
+                _addressChosen = value;
+                OnPropertyChanged();
+            }
+        } 
+
+
         public SearchCommand SearchCommand { get; set; }
+        public ChooseAddressCommand ChooseAddressCommand { get; set; }
 
         public async void SearchAddresses()
         {
+            if (AddressChosen)
+            {
+                AddressChosen = false;
+            }
+
             if (SearchTerm.Length > 5)
             {
                 Addresses = await Address.GetAddresses(SearchTerm);
@@ -51,6 +72,15 @@ namespace StayAtHome.ViewModels
             else
             {
                 Addresses = null;
+                AddressChosen = false;
+            }
+        }
+
+        public void SetAddressChosen()
+        {
+            if (!AddressChosen)
+            {
+                AddressChosen = true;
             }
         }
 
