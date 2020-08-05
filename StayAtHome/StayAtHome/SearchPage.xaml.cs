@@ -20,7 +20,7 @@ namespace StayAtHome
 
         private void Button_OnClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new SavePlacePage());
+            Navigation.PushAsync(new SavePlacePage {BindingContext = this.searchViewModel});
         }
     }
 }

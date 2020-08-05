@@ -7,6 +7,11 @@ using Newtonsoft.Json;
 
 namespace StayAtHome.Models
 {
+    public enum UrlPurpose
+    {
+        AutoComplete,
+        Info
+    }
     public class Address
     {
         private const string  _apiKey = "4449d818-fb45-46b5-8db9-7c4d71f49c86";
@@ -45,7 +50,7 @@ namespace StayAtHome.Models
         {
             List<string> addresses = new List<string>();
 
-            var url = GenerateUrl(searchTerm);
+            var url = GenerateUrl(searchTerm,UrlPurpose.AutoComplete);
 
             using (HttpClient client = new HttpClient())
             {
@@ -60,11 +65,49 @@ namespace StayAtHome.Models
 
         }
 
-        public static string GenerateUrl(string searchTerm)
+        public static async Task<Address> GetAddress(string searchTerm)
         {
+            Address address = new Address();
+
+            var url = GenerateUrl(searchTerm,UrlPurpose.Info);
+
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.GetAsync(url);
+                var json = await response.Content.ReadAsStringAsync();
+
+                address = JsonConvert.DeserializeObject<Address>(json);
+            }
+
+            return address;
+
+
+        }
+
+        public static string GenerateUrl(string searchTerm, UrlPurpose urlPurpose)
+        {
+
+
             searchTerm = searchTerm.Replace(' ', '+');
-            string url =
-                $"https://api.addressify.com.au/addresspro/autocomplete?api_key={_apiKey}&term={searchTerm}";
+
+            var url = "";
+
+            switch (urlPurpose)
+            {
+                case UrlPurpose.AutoComplete:
+                    
+                    url =
+                        $"https://api.addressify.com.au/addresspro/autocomplete?api_key={_apiKey}&term={searchTerm}&address_types=2";
+
+                    break;
+                case UrlPurpose.Info:
+                    
+                    url =
+                        $"https://api.addressify.com.au/addresspro/info?api_key={_apiKey}&term={searchTerm}";
+                    break;
+            }
+
+            
 
             return url;
 

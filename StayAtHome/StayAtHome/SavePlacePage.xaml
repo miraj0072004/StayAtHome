@@ -3,13 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:StayAtHome.ViewModels;assembly=StayAtHome"
              mc:Ignorable="d"
              x:Class="StayAtHome.SavePlacePage">
+    <!--<ContentPage.BindingContext>
+        <viewModels:SearchViewModel/>
+    </ContentPage.BindingContext>-->
     <ContentPage.Content>
         <StackLayout VerticalOptions="Center">
-            <Entry x:Name="placeName" Placeholder="Add place name ex:Home"></Entry>
-            <Label x:Name="chosenAddress" IsEnabled="false"></Label>
-            <Button Text="Save Place"></Button>
+            <Entry x:Name="PlaceName" Placeholder="Add place name ex:Home" Text="{Binding PlaceName, Mode=TwoWay}"></Entry>
+            <Label x:Name="ChosenAddress" Text="{Binding SelectedItem}"></Label>
+            <Label x:Name="ChosenAddressLongitude" Text="{Binding Address.Longitude}"></Label>
+            <Label x:Name="ChosenAddressLatitude" Text="{Binding Address.Latitude}"></Label>
+            <Button Text="Save Place" HorizontalOptions="Center">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding PlaceName.Length}" Value="0">
+                        <Setter Property="IsEnabled" Value="False"></Setter>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

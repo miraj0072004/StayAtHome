@@ -15,13 +15,54 @@ namespace StayAtHome.ViewModels
         {
             SearchCommand = new SearchCommand(this);
             ChooseAddressCommand = new ChooseAddressCommand(this);
+            AddressChosen = false;
+            GetAddressDetailsCommand = new GetAddressDetailsCommand(this);
             Addresses = new List<string>();
+            
         }
 
+        #region Properties and Commands
         private string _searchTerm;
         private List<string> _addresses;
         private bool _addressChosen;
-        
+        private string _selectedItem;
+        private Address _address;
+        private string _placeName;
+
+        public string PlaceName
+        {
+            get { return _placeName; }
+            set
+            {
+                _placeName = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+        public Address Address
+        {
+            get { return _address; }
+            set
+            {
+                _address = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public string SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                _selectedItem = value;
+                OnPropertyChanged();
+            }
+        }
+
+
 
 
         public string SearchTerm
@@ -52,11 +93,14 @@ namespace StayAtHome.ViewModels
                 _addressChosen = value;
                 OnPropertyChanged();
             }
-        } 
+        }
 
-
+        
         public SearchCommand SearchCommand { get; set; }
         public ChooseAddressCommand ChooseAddressCommand { get; set; }
+
+        public GetAddressDetailsCommand GetAddressDetailsCommand { get; set; }
+        #endregion
 
         public async void SearchAddresses()
         {
@@ -74,6 +118,11 @@ namespace StayAtHome.ViewModels
                 Addresses = null;
                 AddressChosen = false;
             }
+        }
+
+        public async void SearchAddress()
+        {
+            Address = await Address.GetAddress(SelectedItem);
         }
 
         public void SetAddressChosen()

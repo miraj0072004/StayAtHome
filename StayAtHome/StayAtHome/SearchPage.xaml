@@ -19,7 +19,7 @@
             </Entry>
 
             <ScrollView VerticalOptions="FillAndExpand">
-                <ListView x:Name="AddressListView" ItemsSource="{Binding Addresses}">
+                <ListView x:Name="AddressListView" ItemsSource="{Binding Addresses}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <TextCell Text="{Binding .}" Command="{Binding Source={x:Reference searchViewModel}, Path=ChooseAddressCommand}"></TextCell>
@@ -27,12 +27,12 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollView>
-            <Button Text="Add" HorizontalOptions="Center" IsEnabled="False" Clicked="Button_OnClicked">
-                <Button.Triggers>
+            <Button Text="Add" HorizontalOptions="Center" IsEnabled="False" Clicked="Button_OnClicked" Command="{Binding GetAddressDetailsCommand}" CommandParameter="{Binding AddressChosen}">
+                <!--<Button.Triggers>
                     <DataTrigger TargetType="Button" Binding="{Binding AddressChosen}" Value="True">
                         <Setter Property="IsEnabled" Value="True"></Setter>
                     </DataTrigger>
-                </Button.Triggers>
+                </Button.Triggers>-->
             </Button>
         </StackLayout>
     </ContentPage.Content>
