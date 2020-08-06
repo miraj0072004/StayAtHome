@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using SQLite;
 using StayAtHome.Commands;
 using StayAtHome.Models;
+using Xamarin.Forms;
 
 namespace StayAtHome.ViewModels
 {
@@ -17,6 +19,7 @@ namespace StayAtHome.ViewModels
             ChooseAddressCommand = new ChooseAddressCommand(this);
             AddressChosen = false;
             GetAddressDetailsCommand = new GetAddressDetailsCommand(this);
+            SaveAddressCommand = new SaveAddressCommand(this);
             Addresses = new List<string>();
             
         }
@@ -98,8 +101,8 @@ namespace StayAtHome.ViewModels
         
         public SearchCommand SearchCommand { get; set; }
         public ChooseAddressCommand ChooseAddressCommand { get; set; }
-
         public GetAddressDetailsCommand GetAddressDetailsCommand { get; set; }
+        public SaveAddressCommand SaveAddressCommand { get; set; }
         #endregion
 
         public async void SearchAddresses()
@@ -130,6 +133,32 @@ namespace StayAtHome.ViewModels
             if (!AddressChosen)
             {
                 AddressChosen = true;
+            }
+        }
+
+        public void SaveAddress()
+        {
+            LocalAddress localAddress = new LocalAddress
+            {
+                Address = SelectedItem,
+                Name = PlaceName,
+                Longitude = Address.Longitude,
+                Latitude = Address.Latitude
+            };
+
+            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
+
+            conn.CreateTable<LocalAddress>();
+            int rows = conn.Insert(localAddress);
+            conn.Close();
+
+            if (rows>0)
+            {
+                Application.Current.MainPage.DisplayAlert("Success","Address added","Ok");
+            }
+            else
+            {
+                Application.Current.MainPage.DisplayAlert("Failure", "Saving address failed", "Ok");
             }
         }
 

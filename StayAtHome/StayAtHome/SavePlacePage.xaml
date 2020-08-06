@@ -15,12 +15,12 @@
             <Label x:Name="ChosenAddress" Text="{Binding SelectedItem}"></Label>
             <Label x:Name="ChosenAddressLongitude" Text="{Binding Address.Longitude}"></Label>
             <Label x:Name="ChosenAddressLatitude" Text="{Binding Address.Latitude}"></Label>
-            <Button Text="Save Place" HorizontalOptions="Center">
-                <Button.Triggers>
+            <Button Text="Save Place" HorizontalOptions="Center" Command="{Binding SaveAddressCommand}" CommandParameter="{Binding PlaceName.Length}">
+                <!--<Button.Triggers>
                     <DataTrigger TargetType="Button" Binding="{Binding PlaceName.Length}" Value="0">
                         <Setter Property="IsEnabled" Value="False"></Setter>
                     </DataTrigger>
-                </Button.Triggers>
+                </Button.Triggers>-->
             </Button>
         </StackLayout>
     </ContentPage.Content>
