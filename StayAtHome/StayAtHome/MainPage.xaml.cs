@@ -18,9 +18,14 @@ namespace StayAtHome
             InitializeComponent();
         }
 
-        private void Button_OnClicked(object sender, EventArgs e)
+        private void Button_New_OnClicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new SearchPage());
+        }
+
+        private void Button_UseSaved_OnClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new SavedPlacesPage());
         }
     }
 }

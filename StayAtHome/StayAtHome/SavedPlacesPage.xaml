@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:StayAtHome.ViewModels;assembly=StayAtHome"
+             xmlns:controls="clr-namespace:Plugin.InputKit.Shared.Controls;assembly=Plugin.InputKit"
+             mc:Ignorable="d"
+             x:Class="StayAtHome.SavedPlacesPage">
+    <ContentPage.BindingContext>
+        <viewModels:SavedPlacesViewModel x:Name="SavedPlacesViewModel"/>
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        
+        
+        <StackLayout Padding="10,10">
+            <ScrollView VerticalOptions="FillAndExpand">
+                <!--<controls:SelectionView SelectionType="RadioButton"   ColumnNumber="1" x:Name="savedAddresses" ItemsSource="{Binding SavedAddresses}"/>-->
+
+                <ListView ItemsSource="{Binding SavedAddresses}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextCell Text="{Binding Name}" Command="{Binding Source={x:Reference SavedPlacesViewModel}, Path=TapSavedAddressCommand}"></TextCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollView>
+            <Button Text="Choose" HorizontalOptions="Center" IsEnabled="False" Command="{Binding ChooseSavedAddressCommand}" CommandParameter="{Binding AddressChosen}"></Button>
+        </StackLayout>
+        
+        
+    </ContentPage.Content>
+</ContentPage>

@@ -146,20 +146,24 @@ namespace StayAtHome.ViewModels
                 Latitude = Address.Latitude
             };
 
-            SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation);
-
-            conn.CreateTable<LocalAddress>();
-            int rows = conn.Insert(localAddress);
-            conn.Close();
-
-            if (rows>0)
+            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
             {
-                Application.Current.MainPage.DisplayAlert("Success","Address added","Ok");
+                conn.CreateTable<LocalAddress>();
+                int rows = conn.Insert(localAddress);
+
+                if (rows > 0)
+                {
+                    //Application.Current.MainPage.DisplayAlert("Success", "Address added", "Ok");
+                    Application.Current.MainPage.Navigation.PushAsync(new SavedPlacesPage());
+
+                }
+                else
+                {
+                    Application.Current.MainPage.DisplayAlert("Failure", "Saving address failed", "Ok");
+                }
             }
-            else
-            {
-                Application.Current.MainPage.DisplayAlert("Failure", "Saving address failed", "Ok");
-            }
+
+            
         }
 
 
