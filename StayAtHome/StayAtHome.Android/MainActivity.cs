@@ -21,6 +21,7 @@ namespace StayAtHome.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            Xamarin.FormsMaps.Init(this, savedInstanceState); // for maps to work
 
             //for local sqlite database
             string dbName = "address_db.sqlite";

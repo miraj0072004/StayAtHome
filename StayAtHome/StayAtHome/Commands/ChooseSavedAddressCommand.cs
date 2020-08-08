@@ -28,7 +28,7 @@ namespace StayAtHome.Commands
 
         public void Execute(object parameter)
         {
-            throw new NotImplementedException();
+            _savedPlacesViewModel.NavigateToMapPage();
         }
 
         public event EventHandler CanExecuteChanged;

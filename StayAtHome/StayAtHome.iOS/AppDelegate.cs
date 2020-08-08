@@ -24,6 +24,7 @@ namespace StayAtHome.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
+            Xamarin.FormsMaps.Init(); // To use maps
 
             //for local sqlite database
             string dbName = "address_db.sqlite";

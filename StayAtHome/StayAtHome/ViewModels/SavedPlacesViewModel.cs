@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using SQLite;
 using StayAtHome.Annotations;
 using StayAtHome.Commands;
 using StayAtHome.Models;
+using Xamarin.Forms;
 
 namespace StayAtHome.ViewModels
 {
@@ -14,7 +16,7 @@ namespace StayAtHome.ViewModels
     {
         #region Fields and Properties
         private List<LocalAddress> _savedAddresses;
-        private string _selectedItem;
+        private LocalAddress _selectedItem;
         private bool _addressChosen;
 
         public bool AddressChosen
@@ -28,7 +30,7 @@ namespace StayAtHome.ViewModels
         }
 
 
-        public string SelectedItem
+        public LocalAddress SelectedItem
         {
             get { return _selectedItem; }
             set
@@ -67,6 +69,16 @@ namespace StayAtHome.ViewModels
             {
                 AddressChosen = true;
             }
+        }
+
+        public void NavigateToMapPage()
+        {
+            //var selectedAddress = SavedAddresses.FirstOrDefault(x => x.Name == SelectedItem);
+            Application.Current.MainPage.Navigation.PushAsync(
+                new MapPage
+                {
+                  BindingContext  = new MapViewModel(SelectedItem.Longitude, SelectedItem.Latitude)
+                });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

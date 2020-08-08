@@ -17,7 +17,7 @@
             <ScrollView VerticalOptions="FillAndExpand">
                 <!--<controls:SelectionView SelectionType="RadioButton"   ColumnNumber="1" x:Name="savedAddresses" ItemsSource="{Binding SavedAddresses}"/>-->
 
-                <ListView ItemsSource="{Binding SavedAddresses}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                <ListView x:Name="SavedAddressListView" ItemsSource="{Binding SavedAddresses}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <TextCell Text="{Binding Name}" Command="{Binding Source={x:Reference SavedPlacesViewModel}, Path=TapSavedAddressCommand}"></TextCell>
