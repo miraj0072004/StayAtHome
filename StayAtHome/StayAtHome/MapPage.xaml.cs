@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Plugin.Geolocator;
 using StayAtHome.ViewModels;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -23,12 +24,22 @@ namespace StayAtHome
 
         protected override async void OnAppearing()
         {
+            
+
             base.OnAppearing();
+
+            var status = await CheckAndRequestLocationPermission();
+            if (status != PermissionStatus.Granted)
+            {
+                // Notify user permission was denied
+                await DisplayAlert("Location Permission Denied","The app cannot continue without the location permission","Ok");
+                return;
+            }
 
             var locator = CrossGeolocator.Current;
             locator.PositionChanged += Locator_PositionChanged;
 
-            await locator.StartListeningAsync(new TimeSpan(0), 1);
+            //await locator.StartListeningAsync(new TimeSpan(0), 1);
 
             var position = await locator.GetPositionAsync();
 
@@ -39,6 +50,19 @@ namespace StayAtHome
 
 
             DisplayInMaps();
+        }
+
+        public async Task<PermissionStatus> CheckAndRequestLocationPermission()
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.LocationAlways>();
+            }
+
+            // Additionally could prompt the user to turn on in settings
+
+            return status;
         }
         protected override async void OnDisappearing()
         {
