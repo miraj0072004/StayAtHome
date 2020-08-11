@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.stayathome" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28" />
 	<application android:label="StayAtHome.Android">
-		<meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDxYqRrQM4ymyPQDvh2HXNaDwL_5LAVa3Q"/>
-  </application>
+		<meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDxYqRrQM4ymyPQDvh2HXNaDwL_5LAVa3Q" />
+	</application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -11,4 +11,5 @@
 	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.VIBRATE" />
 </manifest>

@@ -22,6 +22,7 @@
                       Margin="0,0,0,10"
                       IsShowingUser="True"
                       MapType="Street"/>
+            <Label x:Name="elapsedDistance"></Label>
             <Button x:Name="StartJourneyButton"
                     Text="Start"
                     HorizontalOptions="Center"></Button>

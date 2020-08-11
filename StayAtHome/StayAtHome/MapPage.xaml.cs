@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Plugin.Geolocator;
+using StayAtHome.Helpers;
 using StayAtHome.ViewModels;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -28,20 +29,24 @@ namespace StayAtHome
 
             base.OnAppearing();
 
-            var status = await CheckAndRequestLocationPermission();
-            if (status != PermissionStatus.Granted)
+            var locationPermissionStatus = await PermissionHelper.CheckAndRequestPermissionAsync(new Permissions.LocationWhenInUse());
+            var vibratePermissionStatus = await PermissionHelper.CheckAndRequestPermissionAsync(new Permissions.Vibrate());
+            if (locationPermissionStatus != PermissionStatus.Granted || vibratePermissionStatus != PermissionStatus.Granted)
             {
                 // Notify user permission was denied
-                await DisplayAlert("Location Permission Denied","The app cannot continue without the location permission","Ok");
+                await DisplayAlert("Permission Denied","The app cannot continue without the location and vibration permissions","Ok");
                 return;
             }
 
             var locator = CrossGeolocator.Current;
             locator.PositionChanged += Locator_PositionChanged;
 
-            //await locator.StartListeningAsync(new TimeSpan(0), 1);
+            if (!CrossGeolocator.Current.IsListening)
+            {
+                await locator.StartListeningAsync(new TimeSpan(1), .1);
+            }
 
-            var position = await locator.GetPositionAsync();
+            //var position = await locator.GetPositionAsync();
 
             var center = new Xamarin.Forms.Maps.Position(_mapViewModel.ChosenLocation.Latitude, _mapViewModel.ChosenLocation.Longitude);
             var span = new Xamarin.Forms.Maps.MapSpan(center, 2, 2);
@@ -52,18 +57,18 @@ namespace StayAtHome
             DisplayInMaps();
         }
 
-        public async Task<PermissionStatus> CheckAndRequestLocationPermission()
-        {
-            var status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
-            if (status != PermissionStatus.Granted)
-            {
-                status = await Permissions.RequestAsync<Permissions.LocationAlways>();
-            }
+        //public async Task<PermissionStatus> CheckAndRequestLocationPermission()
+        //{
+        //    var status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
+        //    if (status != PermissionStatus.Granted)
+        //    {
+        //        status = await Permissions.RequestAsync<Permissions.LocationAlways>();
+        //    }
 
-            // Additionally could prompt the user to turn on in settings
+        //    // Additionally could prompt the user to turn on in settings
 
-            return status;
-        }
+        //    return status;
+        //}
         protected override async void OnDisappearing()
         {
             base.OnDisappearing();
@@ -104,8 +109,51 @@ namespace StayAtHome
         private void Locator_PositionChanged(object sender, Plugin.Geolocator.Abstractions.PositionEventArgs e)
         {
             var center = new Xamarin.Forms.Maps.Position(e.Position.Latitude, e.Position.Longitude);
-            var span = new Xamarin.Forms.Maps.MapSpan(center, 2, 2);
+            //var span = new Xamarin.Forms.Maps.MapSpan(center, 1, 1);
+            //locationMap.MoveToRegion(span);
+
+            //zoom differently
+            double zoomLevel = 16;
+            double latlongDegrees = 360 / (Math.Pow(2, zoomLevel));
+            var span = new Xamarin.Forms.Maps.MapSpan(center, latlongDegrees, latlongDegrees);
             locationMap.MoveToRegion(span);
+
+            var elapsedDistance = Location.CalculateDistance(
+                _mapViewModel.ChosenLocation.Latitude,
+                _mapViewModel.ChosenLocation.Longitude,
+                e.Position.Latitude, e.Position.Longitude,
+                DistanceUnits.Kilometers);
+
+            this.elapsedDistance.Text = "Distance moved " + elapsedDistance*1000 + " meters";
+
+            if (elapsedDistance*1000 > 30)
+            {
+                //var reply = DisplayAlert("Moved", "Moved more than 25 meters", "Ok");
+
+                //if (reply)
+                //{
+
+                //}
+
+                try
+                {
+                    // Use default vibration length
+                    Vibration.Vibrate();
+                    DisplayAlert("Stage 4 Violation", "You have traveled more than 5 kilometers", "Ok");
+
+                    // Or use specified time
+                    var duration = TimeSpan.FromSeconds(1);
+                    Vibration.Vibrate(duration);
+                }
+                catch (FeatureNotSupportedException ex)
+                {
+                    // Feature not supported on device
+                }
+                catch (Exception ex)
+                {
+                    // Other error has occurred.
+                }
+            }
         }
     }
 }
