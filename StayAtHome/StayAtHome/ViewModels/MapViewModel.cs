@@ -18,6 +18,8 @@ namespace StayAtHome.ViewModels
 {
     public class MapViewModel : INotifyPropertyChanged
     {
+
+        
         //private double _longitude;
         //private double _latitude;
 
@@ -36,7 +38,43 @@ namespace StayAtHome.ViewModels
 
         private LocalAddress _chosenLocation;
         private Map _locationMap;
-        
+        private int _elapsedSeconds=0;
+        private int _elapsedMinutes=0;
+        private int _elapsedHours=0;
+
+        public int ElapsedHours
+        {
+            get { return _elapsedHours; }
+            set
+            {
+                _elapsedHours = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public int ElapsedMinutes
+        {
+            get { return _elapsedMinutes; }
+            set
+            {
+                _elapsedMinutes = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public int ElapsedSeconds
+        {
+            get { return _elapsedSeconds; }
+            set
+            {
+                _elapsedSeconds = value;
+                OnPropertyChanged();
+            }
+        }
+
+
 
         private string _elapsedDistance;
 
@@ -114,6 +152,32 @@ namespace StayAtHome.ViewModels
             {
                 await locator.StartListeningAsync(new TimeSpan(1), .1);
             }
+
+            Device.StartTimer(TimeSpan.FromSeconds(1), HandleTime );
+        }
+
+        private bool HandleTime()
+        {
+            if (ElapsedSeconds < 60)
+            {
+                ElapsedSeconds++;
+            }
+            else
+            {
+                ElapsedSeconds = 0;
+
+                if (ElapsedMinutes<60)
+                {
+                    ElapsedMinutes++;
+                }
+                else
+                {
+                    ElapsedMinutes = 0;
+                    ElapsedHours++;
+                }
+            }
+
+            return true;
         }
 
         private void DisplayInMaps()
@@ -165,7 +229,7 @@ namespace StayAtHome.ViewModels
             //ElapsedDistance = "Distance moved " + elapsedDistanceNumber * 1000 + " meters";
             ElapsedDistance = (elapsedDistanceNumber * 1000).ToString(CultureInfo.InvariantCulture) ;
 
-            if (elapsedDistanceNumber * 1000 > 40)
+            if (elapsedDistanceNumber * 1000 > 1000)
             {
                 //var reply = DisplayAlert("Moved", "Moved more than 25 meters", "Ok");
 
