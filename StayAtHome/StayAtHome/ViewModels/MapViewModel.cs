@@ -16,6 +16,7 @@ using Map = Xamarin.Forms.Maps.Map;
 
 namespace StayAtHome.ViewModels
 {
+
     public class MapViewModel : INotifyPropertyChanged
     {
 
@@ -41,6 +42,33 @@ namespace StayAtHome.ViewModels
         private int _elapsedSeconds=0;
         private int _elapsedMinutes=0;
         private int _elapsedHours=0;
+        private Color _timeBorderColor;
+        private Color _distanceBorderColor;
+        private double _elapsedDistanceMeters = 0;
+
+        public Color DistanceBorderColor
+        {
+            get { return _distanceBorderColor; }
+            set
+            {
+                _distanceBorderColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public Color TimeBorderColor
+        {
+            get { return _timeBorderColor; }
+            set
+            {
+                _timeBorderColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool TimeVibrated { get; set; } = false;
+        public bool DistanceVibrated { get; set; } = false;
 
         public int ElapsedHours
         {
@@ -76,14 +104,14 @@ namespace StayAtHome.ViewModels
 
 
 
-        private string _elapsedDistance;
+        
 
-        public string ElapsedDistance
+        public double ElapsedDistanceMeters
         {
-            get { return _elapsedDistance; }
+            get { return _elapsedDistanceMeters; }
             set
             {
-                _elapsedDistance = value;
+                _elapsedDistanceMeters = value;
                 OnPropertyChanged();
             }
         }
@@ -158,17 +186,62 @@ namespace StayAtHome.ViewModels
 
         private bool HandleTime()
         {
-            if (ElapsedSeconds < 60)
+            if (ElapsedSeconds < 59)
             {
                 ElapsedSeconds++;
+
+                if (TimeBorderColor != Color.OrangeRed)
+                {
+                    if (ElapsedSeconds<40)
+                    {
+                        if (TimeBorderColor != Color.YellowGreen)
+                        {
+                            TimeBorderColor = Color.YellowGreen;
+                        }
+                    }
+                    else
+                    {
+                        if (TimeBorderColor != Color.Yellow)
+                        {
+                            TimeBorderColor = Color.Yellow;
+                        }
+                    }
+                }
             }
             else
             {
                 ElapsedSeconds = 0;
 
-                if (ElapsedMinutes<60)
+                if (ElapsedMinutes<59)
                 {
                     ElapsedMinutes++;
+
+                    if (ElapsedMinutes==1)
+                    {
+                        if (!TimeVibrated)
+                        {
+                            try
+                            {
+                                // Use default vibration length
+                                Vibration.Vibrate();
+                                Application.Current.MainPage.DisplayAlert("Stage 4 Violation", "You have traveled for more than one hour", "Ok");
+
+                                // Or use specified time
+                                var duration = TimeSpan.FromSeconds(1);
+                                Vibration.Vibrate(duration);
+                                TimeVibrated = true;
+                                TimeBorderColor = Color.OrangeRed;
+                            }
+                            catch (FeatureNotSupportedException ex)
+                            {
+                                // Feature not supported on device
+                            }
+                            catch (Exception ex)
+                            {
+                                // Other error has occurred.
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -226,10 +299,15 @@ namespace StayAtHome.ViewModels
                 e.Position.Latitude, e.Position.Longitude,
                 DistanceUnits.Kilometers);
 
-            //ElapsedDistance = "Distance moved " + elapsedDistanceNumber * 1000 + " meters";
-            ElapsedDistance = (elapsedDistanceNumber * 1000).ToString(CultureInfo.InvariantCulture) ;
+            //ElapsedDistanceMeters = "Distance moved " + elapsedDistanceNumber * 1000 + " meters";
 
-            if (elapsedDistanceNumber * 1000 > 1000)
+            //var elapsedDistanceMetersDouble = elapsedDistanceNumber * 1000;
+
+            ElapsedDistanceMeters = elapsedDistanceNumber * 1000;
+            
+
+
+            if (ElapsedDistanceMeters > 100)
             {
                 //var reply = DisplayAlert("Moved", "Moved more than 25 meters", "Ok");
 
@@ -238,23 +316,54 @@ namespace StayAtHome.ViewModels
 
                 //}
 
-                try
+                if (!DistanceVibrated)
                 {
-                    // Use default vibration length
-                    Vibration.Vibrate();
-                    Application.Current.MainPage.DisplayAlert("Stage 4 Violation", "You have traveled more than 5 kilometers", "Ok");
+                    try
+                    {
+                        // Use default vibration length
+                        Vibration.Vibrate();
+                        Application.Current.MainPage.DisplayAlert("Stage 4 Violation", "You have traveled more than 5 kilometers", "Ok");
 
-                    // Or use specified time
-                    var duration = TimeSpan.FromSeconds(1);
-                    Vibration.Vibrate(duration);
+                        // Or use specified time
+                        var duration = TimeSpan.FromSeconds(1);
+                        Vibration.Vibrate(duration);
+                        DistanceVibrated = true;
+
+                        if (DistanceBorderColor != Color.OrangeRed)
+                        {
+                            DistanceBorderColor = Color.OrangeRed;
+                        }
+                    }
+                    catch (FeatureNotSupportedException ex)
+                    {
+                        // Feature not supported on device
+                    }
+                    catch (Exception ex)
+                    {
+                        // Other error has occurred.
+                    }
                 }
-                catch (FeatureNotSupportedException ex)
+            }
+            else
+            {
+                if (DistanceVibrated)
                 {
-                    // Feature not supported on device
+                    DistanceVibrated = false;
                 }
-                catch (Exception ex)
+
+                if (ElapsedDistanceMeters < 80)
                 {
-                    // Other error has occurred.
+                    if (DistanceBorderColor != Color.YellowGreen)
+                    {
+                        DistanceBorderColor = Color.YellowGreen;
+                    }
+                }
+                else
+                {
+                    if (DistanceBorderColor != Color.Yellow)
+                    {
+                        DistanceBorderColor = Color.Yellow;
+                    }
                 }
             }
         }
