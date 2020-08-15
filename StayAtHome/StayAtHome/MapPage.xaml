@@ -51,8 +51,9 @@
                         HorizontalOptions="Center"
                         Command="{Binding StartJourneyCommand}"></Button>
                 <Button Grid.Column="1"
-                        x:Name="resetButton"
-                        Text="Reset"
+                        x:Name="addressButton"
+                        Text="Address"
+                        Clicked="AddressButton_OnClicked"
                         HorizontalOptions="Center"></Button>
             </Grid>
 

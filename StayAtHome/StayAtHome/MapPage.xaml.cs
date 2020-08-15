@@ -17,9 +17,17 @@ namespace StayAtHome
     {
         private readonly MapViewModel _mapViewModel;
 
-        public MapPage(MapViewModel mapViewModel)
+        //uncomment if multiple address saving is needed
+        //public MapPage(MapViewModel mapViewModel)
+        //{
+        //    _mapViewModel = mapViewModel;
+        //    BindingContext = _mapViewModel;
+        //    InitializeComponent();
+        //}
+
+        public MapPage()
         {
-            _mapViewModel = mapViewModel;
+            _mapViewModel = new MapViewModel();
             BindingContext = _mapViewModel;
             InitializeComponent();
         }
@@ -51,6 +59,10 @@ namespace StayAtHome
             _mapViewModel.StopListening();
         }
 
-        
+
+        private void AddressButton_OnClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new SearchPage());
+        }
     }
 }

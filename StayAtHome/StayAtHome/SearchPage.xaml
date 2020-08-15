@@ -27,12 +27,15 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollView>
-            <Button Text="Add" HorizontalOptions="Center" IsEnabled="False" Clicked="Button_OnClicked" Command="{Binding GetAddressDetailsCommand}" CommandParameter="{Binding AddressChosen}">
-                <!--<Button.Triggers>
-                    <DataTrigger TargetType="Button" Binding="{Binding AddressChosen}" Value="True">
-                        <Setter Property="IsEnabled" Value="True"></Setter>
-                    </DataTrigger>
-                </Button.Triggers>-->
+            
+            <!--This is when many addresses were allowed to be saved-->
+            <!--<Button Text="Add" HorizontalOptions="Center" IsEnabled="False" Clicked="Button_OnClicked" Command="{Binding GetAddressDetailsCommand}" CommandParameter="{Binding AddressChosen}">
+
+            </Button>-->
+
+            <!--This is when we only deal with one residence address-->
+            <Button Text="Save" HorizontalOptions="Center" IsEnabled="False" Clicked="Button_OnClicked" Command="{Binding GetAddressDetailsCommand}" CommandParameter="{Binding AddressChosen}">
+
             </Button>
         </StackLayout>
     </ContentPage.Content>

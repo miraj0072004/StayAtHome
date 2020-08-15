@@ -16,12 +16,13 @@ namespace StayAtHome.Commands
         }
         public bool CanExecute(object parameter)
         {
-            var nameLength = (int?)parameter ?? 0;
+            //uncomment if needs to be used for multiple address saving
+            //var nameLength = (int?)parameter ?? 0;
 
-            if (nameLength == 0)
-            {
-                return false;
-            }
+            //if (nameLength == 0)
+            //{
+            //    return false;
+            //}
 
             return true;
         }

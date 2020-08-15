@@ -18,7 +18,8 @@ namespace StayAtHome
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MainPage());
+            //MainPage = new NavigationPage(new MainPage());
+            MainPage = new NavigationPage(new MapPage());
             DatabaseLocation = databaseLocation;
         }
 

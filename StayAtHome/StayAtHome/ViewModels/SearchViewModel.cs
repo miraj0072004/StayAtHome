@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Plugin.Toast;
+using Plugin.Toast.Abstractions;
 using SQLite;
 using StayAtHome.Commands;
+using StayAtHome.Helpers;
 using StayAtHome.Models;
 using Xamarin.Forms;
 
@@ -138,32 +141,41 @@ namespace StayAtHome.ViewModels
 
         public void SaveAddress()
         {
-            LocalAddress localAddress = new LocalAddress
-            {
-                Address = SelectedItem,
-                Name = PlaceName,
-                Longitude = Address.Longitude,
-                Latitude = Address.Latitude
-            };
+            //uncomment if needs to be used for multiple address saving
+            //LocalAddress localAddress = new LocalAddress
+            //{
+            //    Address = SelectedItem,
+            //    Name = PlaceName,
+            //    Longitude = Address.Longitude,
+            //    Latitude = Address.Latitude
+            //};
 
-            using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
-            {
-                conn.CreateTable<LocalAddress>();
-                int rows = conn.Insert(localAddress);
+            //using (SQLiteConnection conn = new SQLiteConnection(App.DatabaseLocation))
+            //{
+            //    conn.CreateTable<LocalAddress>();
+            //    int rows = conn.Insert(localAddress);
 
-                if (rows > 0)
-                {
-                    //Application.Current.MainPage.DisplayAlert("Success", "Address added", "Ok");
-                    Application.Current.MainPage.Navigation.PushAsync(new SavedPlacesPage());
+            //    if (rows > 0)
+            //    {
+            //        //Application.Current.MainPage.DisplayAlert("Success", "Address added", "Ok");
+            //        Application.Current.MainPage.Navigation.PushAsync(new SavedPlacesPage());
 
-                }
-                else
-                {
-                    Application.Current.MainPage.DisplayAlert("Failure", "Saving address failed", "Ok");
-                }
-            }
+            //    }
+            //    else
+            //    {
+            //        Application.Current.MainPage.DisplayAlert("Failure", "Saving address failed", "Ok");
+            //    }
+            //}
 
-            
+            Settings.Address = SelectedItem;
+            Settings.Longitude = Address.Longitude;
+            Settings.Latitude = Address.Latitude;
+
+            CrossToastPopUp.Current.ShowToastMessage("Location Added Successfully", ToastLength.Long);
+
+            Application.Current.MainPage.Navigation.PopAsync();
+
+
         }
 
 

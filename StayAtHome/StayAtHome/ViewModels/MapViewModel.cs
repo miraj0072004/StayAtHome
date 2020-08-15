@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Plugin.Geolocator;
+using Plugin.Toast;
 using StayAtHome.Annotations;
 using StayAtHome.Commands;
 using StayAtHome.Helpers;
@@ -139,6 +140,13 @@ namespace StayAtHome.ViewModels
             StartJourneyCommand = new StartJourneyCommand(this);
         }
 
+        public MapViewModel()
+        {
+            StartJourneyCommand = new StartJourneyCommand(this);
+        }
+
+
+
         public async void InitializeMap(Map locationMap)
         {
             LocationMap = locationMap;
@@ -155,12 +163,30 @@ namespace StayAtHome.ViewModels
 
             //var position = await locator.GetPositionAsync();
 
+
+
+            if (Settings.Address != null)
+            {
+                ChosenLocation.Longitude = Settings.Longitude;
+                ChosenLocation.Longitude = Settings.Latitude;
+                ChosenLocation.Address = Settings.Address;
+                DisplayInMaps();
+            }
+            else
+            {
+                var locator = CrossGeolocator.Current;
+                var position = await locator.GetPositionAsync();
+                ChosenLocation.Longitude = position.Longitude;
+                ChosenLocation.Longitude = position.Latitude;
+
+            }
+
             var center = new Xamarin.Forms.Maps.Position(ChosenLocation.Latitude, ChosenLocation.Longitude);
             var span = new Xamarin.Forms.Maps.MapSpan(center, 2, 2);
             LocationMap.MoveToRegion(span);
 
 
-            DisplayInMaps();
+            
         }
 
         public async void StopListening()
@@ -173,15 +199,23 @@ namespace StayAtHome.ViewModels
 
         public async void StartListening()
         {
-            var locator = CrossGeolocator.Current;
-            locator.PositionChanged += Locator_PositionChanged;
-
-            if (!CrossGeolocator.Current.IsListening)
+            if (Settings.Address != null)
             {
-                await locator.StartListeningAsync(new TimeSpan(1), .1);
-            }
+                var locator = CrossGeolocator.Current;
+                locator.PositionChanged += Locator_PositionChanged;
 
-            Device.StartTimer(TimeSpan.FromSeconds(1), HandleTime );
+                if (!CrossGeolocator.Current.IsListening)
+                {
+                    await locator.StartListeningAsync(new TimeSpan(1), .1);
+                }
+
+                Device.StartTimer(TimeSpan.FromSeconds(1), HandleTime );
+            }
+            else
+            {
+                CrossToastPopUp.Current.ShowToastMessage("Set the location address to continue");
+                await Application.Current.MainPage.Navigation.PushAsync(new SearchPage());
+            }
         }
 
         private bool HandleTime()

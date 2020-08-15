@@ -73,14 +73,11 @@ namespace StayAtHome.ViewModels
 
         public void NavigateToMapPage()
         {
-            //var selectedAddress = SavedAddresses.FirstOrDefault(x => x.Name == SelectedItem);
-            Application.Current.MainPage.Navigation.PushAsync(
-                //new MapPage
-                //{
-                //  BindingContext  = new MapViewModel(SelectedItem.Longitude, SelectedItem.Latitude)
-                //});
+            //uncomment if multiple address saving is needed
+            //Application.Current.MainPage.Navigation.PushAsync(
 
-                new MapPage(new MapViewModel(SelectedItem)));
+
+            //    new MapPage(new MapViewModel(SelectedItem)));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
