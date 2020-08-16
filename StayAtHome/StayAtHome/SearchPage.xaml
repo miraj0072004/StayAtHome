@@ -34,7 +34,7 @@
             </Button>-->
 
             <!--This is when we only deal with one residence address-->
-            <Button Text="Save" HorizontalOptions="Center" IsEnabled="False" Clicked="Button_OnClicked" Command="{Binding GetAddressDetailsCommand}" CommandParameter="{Binding AddressChosen}">
+            <Button Text="Save" HorizontalOptions="Center" IsEnabled="False" Clicked="Button_OnClicked" Command="{Binding SaveAddressCommand}" CommandParameter="{Binding AddressChosen}">
 
             </Button>
         </StackLayout>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using ButtonCircle.FormsPlugin.iOS;
 using Foundation;
 using UIKit;
 
@@ -25,6 +25,7 @@ namespace StayAtHome.iOS
         {
             global::Xamarin.Forms.Forms.Init();
             Xamarin.FormsMaps.Init(); // To use maps
+            ButtonCircleRenderer.Init(); // for circle buttons to work
 
             //for local sqlite database
             string dbName = "address_db.sqlite";

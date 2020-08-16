@@ -53,11 +53,11 @@ namespace StayAtHome.Helpers
             }
         }
 
-        public static double Longitude
+        public static string Longitude
         {
             get
             {
-                return AppSettings.GetValueOrDefault("Longitude", 0);
+                return AppSettings.GetValueOrDefault("Longitude", "");
             }
             set
             {
@@ -65,11 +65,11 @@ namespace StayAtHome.Helpers
             }
         }
 
-        public static double Latitude
+        public static string Latitude
         {
             get
             {
-                return AppSettings.GetValueOrDefault("Latitude", 0);
+                return AppSettings.GetValueOrDefault("Latitude", "");
             }
             set
             {

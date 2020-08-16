@@ -17,7 +17,7 @@ using Map = Xamarin.Forms.Maps.Map;
 
 namespace StayAtHome.ViewModels
 {
-
+    
     public class MapViewModel : INotifyPropertyChanged
     {
 
@@ -46,6 +46,19 @@ namespace StayAtHome.ViewModels
         private Color _timeBorderColor;
         private Color _distanceBorderColor;
         private double _elapsedDistanceMeters = 0;
+        private bool _journeyOngoing;
+
+
+        public bool JourneyOngoing
+        {
+            get { return _journeyOngoing; }
+            set
+            {
+                _journeyOngoing = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public Color DistanceBorderColor
         {
@@ -143,6 +156,7 @@ namespace StayAtHome.ViewModels
         public MapViewModel()
         {
             StartJourneyCommand = new StartJourneyCommand(this);
+            ChosenLocation = new LocalAddress();
         }
 
 
@@ -165,10 +179,10 @@ namespace StayAtHome.ViewModels
 
 
 
-            if (Settings.Address != null)
+            if (Settings.Address != "" && Settings.Longitude != "" && Settings.Latitude != "")
             {
-                ChosenLocation.Longitude = Settings.Longitude;
-                ChosenLocation.Longitude = Settings.Latitude;
+                ChosenLocation.Longitude = Double.Parse(Settings.Longitude);
+                ChosenLocation.Latitude = Double.Parse(Settings.Latitude);
                 ChosenLocation.Address = Settings.Address;
                 DisplayInMaps();
             }
@@ -177,7 +191,7 @@ namespace StayAtHome.ViewModels
                 var locator = CrossGeolocator.Current;
                 var position = await locator.GetPositionAsync();
                 ChosenLocation.Longitude = position.Longitude;
-                ChosenLocation.Longitude = position.Latitude;
+                ChosenLocation.Latitude = position.Latitude;
 
             }
 
@@ -199,22 +213,31 @@ namespace StayAtHome.ViewModels
 
         public async void StartListening()
         {
-            if (Settings.Address != null)
+            if (!JourneyOngoing)
             {
-                var locator = CrossGeolocator.Current;
-                locator.PositionChanged += Locator_PositionChanged;
-
-                if (!CrossGeolocator.Current.IsListening)
+                if (Settings.Address != "" && Settings.Longitude != "" && Settings.Latitude != "")
                 {
-                    await locator.StartListeningAsync(new TimeSpan(1), .1);
-                }
+                    var locator = CrossGeolocator.Current;
+                    locator.PositionChanged += Locator_PositionChanged;
 
-                Device.StartTimer(TimeSpan.FromSeconds(1), HandleTime );
+                    if (!CrossGeolocator.Current.IsListening)
+                    {
+                        await locator.StartListeningAsync(new TimeSpan(1), .1);
+                    }
+
+                    Device.StartTimer(TimeSpan.FromSeconds(1), HandleTime );
+                    JourneyOngoing = true;
+                }
+                else
+                {
+                    CrossToastPopUp.Current.ShowToastMessage("Set the location address to continue");
+                    await Application.Current.MainPage.Navigation.PushAsync(new SearchPage());
+                }
             }
             else
             {
-                CrossToastPopUp.Current.ShowToastMessage("Set the location address to continue");
-                await Application.Current.MainPage.Navigation.PushAsync(new SearchPage());
+                JourneyOngoing = false;
+                StopListening();
             }
         }
 

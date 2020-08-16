@@ -24,7 +24,16 @@ namespace StayAtHome.Commands
             //    return false;
             //}
 
-            return true;
+            //Inserted following code to in the single page approach
+            var addressChosen = (bool?)parameter ?? false;
+
+            if (addressChosen)
+            {
+                return true;
+            }
+
+            return false;
+            
         }
 
         public void Execute(object parameter)

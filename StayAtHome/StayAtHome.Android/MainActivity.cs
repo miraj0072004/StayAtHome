@@ -6,6 +6,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using ButtonCircle.FormsPlugin.Droid;
 
 namespace StayAtHome.Droid
 {
@@ -22,6 +23,7 @@ namespace StayAtHome.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             Xamarin.FormsMaps.Init(this, savedInstanceState); // for maps to work
+            ButtonCircleRenderer.Init(); // for circle buttons
 
             //for local sqlite database
             string dbName = "address_db.sqlite";

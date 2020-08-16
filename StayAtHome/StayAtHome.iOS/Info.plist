@@ -36,5 +36,11 @@
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need acces to the location to help determine where you are</string>
+  <key>UIAppFonts</key>
+  <array>
+    <string>materialicons.ttf</string>
+    <string>fontawesome.ttf</string>
+    <string>ionicons.ttf</string>
+  </array>
 </dict>
 </plist>

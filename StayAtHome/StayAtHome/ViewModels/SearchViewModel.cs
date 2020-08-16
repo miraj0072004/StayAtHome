@@ -136,6 +136,7 @@ namespace StayAtHome.ViewModels
             if (!AddressChosen)
             {
                 AddressChosen = true;
+                SearchAddress();
             }
         }
 
@@ -168,8 +169,8 @@ namespace StayAtHome.ViewModels
             //}
 
             Settings.Address = SelectedItem;
-            Settings.Longitude = Address.Longitude;
-            Settings.Latitude = Address.Latitude;
+            Settings.Longitude = Address.Longitude.ToString();
+            Settings.Latitude = Address.Latitude.ToString();
 
             CrossToastPopUp.Current.ShowToastMessage("Location Added Successfully", ToastLength.Long);
 
