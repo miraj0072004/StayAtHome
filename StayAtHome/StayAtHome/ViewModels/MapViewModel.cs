@@ -195,20 +195,30 @@ namespace StayAtHome.ViewModels
 
             }
 
+            SetMapStartPoint();
+        }
+
+        private void SetMapStartPoint()
+        {
             var center = new Xamarin.Forms.Maps.Position(ChosenLocation.Latitude, ChosenLocation.Longitude);
             var span = new Xamarin.Forms.Maps.MapSpan(center, 2, 2);
             LocationMap.MoveToRegion(span);
-
-
-            
         }
 
         public async void StopListening()
         {
             var locator = CrossGeolocator.Current;
             locator.PositionChanged -= Locator_PositionChanged;
+            ResetTimerAndDistance();
+            SetMapStartPoint();
 
             await locator.StopListeningAsync();
+        }
+
+        private void ResetTimerAndDistance()
+        {
+            ElapsedHours = ElapsedMinutes = ElapsedSeconds = 0;
+            ElapsedDistanceMeters = 0;
         }
 
         public async void StartListening()
@@ -224,9 +234,18 @@ namespace StayAtHome.ViewModels
                     {
                         await locator.StartListeningAsync(new TimeSpan(1), .1);
                     }
-
-                    Device.StartTimer(TimeSpan.FromSeconds(1), HandleTime );
                     JourneyOngoing = true;
+                    Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+                    {
+                        if (JourneyOngoing)
+                        {
+                            HandleTime();
+                            return true;
+                        }
+
+                        return false;
+                    });
+                    
                 }
                 else
                 {
@@ -241,7 +260,7 @@ namespace StayAtHome.ViewModels
             }
         }
 
-        private bool HandleTime()
+        private void HandleTime()
         {
             if (ElapsedSeconds < 59)
             {
@@ -307,7 +326,7 @@ namespace StayAtHome.ViewModels
                 }
             }
 
-            return true;
+            
         }
 
         private void DisplayInMaps()

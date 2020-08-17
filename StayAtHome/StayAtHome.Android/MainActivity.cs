@@ -24,6 +24,7 @@ namespace StayAtHome.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             Xamarin.FormsMaps.Init(this, savedInstanceState); // for maps to work
             ButtonCircleRenderer.Init(); // for circle buttons
+            
 
             //for local sqlite database
             string dbName = "address_db.sqlite";

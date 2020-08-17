@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Plugin.Geolocator;
+using Plugin.Toast;
 using StayAtHome.Helpers;
 using StayAtHome.ViewModels;
 using Xamarin.Essentials;
@@ -62,6 +63,7 @@ namespace StayAtHome
 
         private void AddressButton_OnClicked(object sender, EventArgs e)
         {
+            CrossToastPopUp.Current.ShowToastMessage("Setting a new address will overwrite the current address");
             Navigation.PushAsync(new SearchPage());
         }
     }
