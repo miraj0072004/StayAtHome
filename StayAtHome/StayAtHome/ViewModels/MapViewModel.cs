@@ -157,6 +157,7 @@ namespace StayAtHome.ViewModels
         {
             StartJourneyCommand = new StartJourneyCommand(this);
             ChosenLocation = new LocalAddress();
+            DistanceBorderColor = TimeBorderColor = Color.Black;
         }
 
 
@@ -219,6 +220,7 @@ namespace StayAtHome.ViewModels
         {
             ElapsedHours = ElapsedMinutes = ElapsedSeconds = 0;
             ElapsedDistanceMeters = 0;
+            DistanceBorderColor = TimeBorderColor = Color.Black;
         }
 
         public async void StartListening()
