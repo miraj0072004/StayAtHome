@@ -57,7 +57,7 @@ namespace StayAtHome
         protected override async void OnDisappearing()
         {
             base.OnDisappearing();
-            _mapViewModel.StopListening();
+            //_mapViewModel.StopListening();
         }
 
 
