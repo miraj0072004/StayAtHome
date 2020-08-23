@@ -1,4 +1,5 @@
 ﻿using System;
+using StayAtHome.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -7,6 +8,8 @@ namespace StayAtHome
     public partial class App : Application
     {
         public static string DatabaseLocation = string.Empty;
+
+        public static MapViewModel GlobalMapViewModel = new MapViewModel();
         public App()
         {
             InitializeComponent();

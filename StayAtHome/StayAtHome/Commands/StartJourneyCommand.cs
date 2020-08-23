@@ -21,7 +21,8 @@ namespace StayAtHome.Commands
 
         public void Execute(object parameter)
         {
-            _mapViewModel.StartListening();
+            //_mapViewModel.StartListening();
+            _mapViewModel.StartJourneyCommandExecute();
         }
 
         public event EventHandler CanExecuteChanged;

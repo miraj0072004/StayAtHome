@@ -28,37 +28,40 @@ namespace StayAtHome
 
         public MapPage()
         {
-            _mapViewModel = new MapViewModel();
+            //_mapViewModel = new MapViewModel();
+            _mapViewModel = App.GlobalMapViewModel;
             BindingContext = _mapViewModel;
             InitializeComponent();
+            _mapViewModel.LocationMap = locationMap;
+            _mapViewModel.InitializeMap();
         }
 
-        protected override async void OnAppearing()
-        {
+        //protected override async void OnAppearing()
+        //{
             
 
-            base.OnAppearing();
-
-            _mapViewModel.InitializeMap(locationMap);
-        }
-
-        //public async Task<PermissionStatus> CheckAndRequestLocationPermission()
-        //{
-        //    var status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
-        //    if (status != PermissionStatus.Granted)
-        //    {
-        //        status = await Permissions.RequestAsync<Permissions.LocationAlways>();
-        //    }
-
-        //    // Additionally could prompt the user to turn on in settings
-
-        //    return status;
+        //    base.OnAppearing();
+        //    //_mapViewModel.LocationMap = locationMap;
+        //    //_mapViewModel.InitializeMap();
         //}
-        protected override async void OnDisappearing()
-        {
-            base.OnDisappearing();
-            //_mapViewModel.StopListening();
-        }
+
+        ////public async Task<PermissionStatus> CheckAndRequestLocationPermission()
+        ////{
+        ////    var status = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
+        ////    if (status != PermissionStatus.Granted)
+        ////    {
+        ////        status = await Permissions.RequestAsync<Permissions.LocationAlways>();
+        ////    }
+
+        ////    // Additionally could prompt the user to turn on in settings
+
+        ////    return status;
+        ////}
+        //protected override async void OnDisappearing()
+        //{
+        //    base.OnDisappearing();
+        //    //_mapViewModel.StopListening();
+        //}
 
 
         private void AddressButton_OnClicked(object sender, EventArgs e)

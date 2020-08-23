@@ -9,6 +9,7 @@ using Plugin.Toast;
 using StayAtHome.Annotations;
 using StayAtHome.Commands;
 using StayAtHome.Helpers;
+using StayAtHome.Messages;
 using StayAtHome.Models;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -158,13 +159,26 @@ namespace StayAtHome.ViewModels
             StartJourneyCommand = new StartJourneyCommand(this);
             ChosenLocation = new LocalAddress();
             DistanceBorderColor = TimeBorderColor = Color.Black;
+
+            HandleReceivedMessages();
+            //InitializeMap();
+        }
+
+        private void HandleReceivedMessages()
+        {
+            MessagingCenter.Subscribe<TickedMessage>(this, "StartJourneyMessage", message => {
+                Device.BeginInvokeOnMainThread(StartListening);
+            });
+
+            MessagingCenter.Subscribe<CancelledMessage>(this, "StopJourneyMessage", message => {
+                Device.BeginInvokeOnMainThread(StopListening);
+            });
         }
 
 
-
-        public async void InitializeMap(Map locationMap)
+        public async void InitializeMap()
         {
-            LocationMap = locationMap;
+            
             var locationPermissionStatus = await PermissionHelper.CheckAndRequestPermissionAsync(new Permissions.LocationWhenInUse());
             var vibratePermissionStatus = await PermissionHelper.CheckAndRequestPermissionAsync(new Permissions.Vibrate());
             if (locationPermissionStatus != PermissionStatus.Granted || vibratePermissionStatus != PermissionStatus.Granted)
@@ -225,40 +239,87 @@ namespace StayAtHome.ViewModels
 
         public async void StartListening()
         {
-            if (!JourneyOngoing)
+            //if (!JourneyOngoing)
+            //{
+            //    if (Settings.Address != "" && Settings.Longitude != "" && Settings.Latitude != "")
+            //    {
+            //        var locator = CrossGeolocator.Current;
+            //        locator.PositionChanged += Locator_PositionChanged;
+
+            //        if (!CrossGeolocator.Current.IsListening)
+            //        {
+            //            await locator.StartListeningAsync(new TimeSpan(1), .1);
+            //        }
+            //        JourneyOngoing = true;
+            //        Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+            //        {
+            //            if (JourneyOngoing)
+            //            {
+            //                HandleTime();
+            //                return true;
+            //            }
+
+            //            return false;
+            //        });
+
+            //    }
+            //    else
+            //    {
+            //        CrossToastPopUp.Current.ShowToastMessage("Set the location address to continue");
+            //        await Application.Current.MainPage.Navigation.PushAsync(new SearchPage());
+            //    }
+            //}
+            //else
+            //{
+            //    JourneyOngoing = false;
+            //    StopListening();
+            //}
+
+            //var message = new StartLongRunningTaskMessage();
+            //MessagingCenter.Send(message, "StartLongRunningTaskMessage");
+
+            if (Settings.Address != "" && Settings.Longitude != "" && Settings.Latitude != "")
             {
-                if (Settings.Address != "" && Settings.Longitude != "" && Settings.Latitude != "")
-                {
-                    var locator = CrossGeolocator.Current;
-                    locator.PositionChanged += Locator_PositionChanged;
+                var locator = CrossGeolocator.Current;
+                locator.PositionChanged += Locator_PositionChanged;
 
-                    if (!CrossGeolocator.Current.IsListening)
+                if (!CrossGeolocator.Current.IsListening)
+                {
+                    await locator.StartListeningAsync(new TimeSpan(1), .1);
+                }
+                JourneyOngoing = true;
+                Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+                {
+                    if (JourneyOngoing)
                     {
-                        await locator.StartListeningAsync(new TimeSpan(1), .1);
+                        HandleTime();
+                        return true;
                     }
-                    JourneyOngoing = true;
-                    Device.StartTimer(TimeSpan.FromSeconds(1), () =>
-                    {
-                        if (JourneyOngoing)
-                        {
-                            HandleTime();
-                            return true;
-                        }
 
-                        return false;
-                    });
-                    
-                }
-                else
-                {
-                    CrossToastPopUp.Current.ShowToastMessage("Set the location address to continue");
-                    await Application.Current.MainPage.Navigation.PushAsync(new SearchPage());
-                }
+                    return false;
+                });
+
             }
             else
             {
+                CrossToastPopUp.Current.ShowToastMessage("Set the location address to continue");
+                await Application.Current.MainPage.Navigation.PushAsync(new SearchPage());
+            }
+        }
+
+        public void StartJourneyCommandExecute()
+        {
+            if (!JourneyOngoing)
+            {
+                var message = new StartLongRunningTaskMessage();
+                MessagingCenter.Send(message, "StartLongRunningTaskMessage");
+                JourneyOngoing = true;
+            }
+            else
+            {
+                var message = new StopLongRunningTaskMessage();
+                MessagingCenter.Send(message, "StopLongRunningTaskMessage");
                 JourneyOngoing = false;
-                StopListening();
             }
         }
 
