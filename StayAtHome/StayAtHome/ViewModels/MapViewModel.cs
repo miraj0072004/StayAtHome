@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Plugin.Geolocator;
+using Plugin.LocalNotification;
 using Plugin.Toast;
 using StayAtHome.Annotations;
 using StayAtHome.Commands;
@@ -18,7 +19,10 @@ using Map = Xamarin.Forms.Maps.Map;
 
 namespace StayAtHome.ViewModels
 {
-    
+    enum ViolationType{
+    Distance,
+    Time
+    }
     public class MapViewModel : INotifyPropertyChanged
     {
 
@@ -48,6 +52,7 @@ namespace StayAtHome.ViewModels
         private Color _distanceBorderColor;
         private double _elapsedDistanceMeters = 0;
         private bool _journeyOngoing;
+        INotificationManager notificationManager;
 
 
         public bool JourneyOngoing
@@ -160,8 +165,33 @@ namespace StayAtHome.ViewModels
             ChosenLocation = new LocalAddress();
             DistanceBorderColor = TimeBorderColor = Color.Black;
 
-            HandleReceivedMessages();
-            //InitializeMap();
+            HandleReceivedMessages(); //Handle service messages
+
+            notificationManager = DependencyService.Get<INotificationManager>();
+
+            //notificationManager.NotificationReceived += (sender, eventArgs) =>
+            //{
+            //    var evtData = (NotificationEventArgs)eventArgs;
+            //    ShowNotification(evtData.Title, evtData.Message);
+            //};
+            
+        }
+
+        public void SendNotification(string title, string message)
+        {
+            notificationManager.ScheduleNotification(title, message);
+        }
+
+        public void ShowNotification(string title, string message)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                var msg = new Label()
+                {
+                    Text = $"Notification Received:\nTitle: {title}\nMessage: {message}"
+                };
+                //stackLayout.Children.Add(msg);
+            });
         }
 
         private void HandleReceivedMessages()
@@ -328,10 +358,9 @@ namespace StayAtHome.ViewModels
             if (ElapsedSeconds < 59)
             {
                 ElapsedSeconds++;
-
                 if (TimeBorderColor != Color.OrangeRed)
                 {
-                    if (ElapsedSeconds<40)
+                    if (ElapsedSeconds < 6)
                     {
                         if (TimeBorderColor != Color.YellowGreen)
                         {
@@ -340,12 +369,36 @@ namespace StayAtHome.ViewModels
                     }
                     else
                     {
-                        if (TimeBorderColor != Color.Yellow)
+                        if (TimeBorderColor != Color.Yellow || TimeBorderColor != Color.OrangeRed)
                         {
                             TimeBorderColor = Color.Yellow;
                         }
                     }
                 }
+
+                if (ElapsedSeconds == 10)
+                {
+                    if (!TimeVibrated)
+                    {
+                        try
+                        {
+                            // Use default vibration length
+                            //Vibration.Vibrate();
+                            NotifyLockdownViolation(ViolationType.Time);
+                            TimeBorderColor = Color.OrangeRed;
+                        }
+                        catch (FeatureNotSupportedException ex)
+                        {
+                            // Feature not supported on device
+                        }
+                        catch (Exception ex)
+                        {
+                            // Other error has occurred.
+                        }
+                    }
+                }
+
+                
             }
             else
             {
@@ -355,32 +408,27 @@ namespace StayAtHome.ViewModels
                 {
                     ElapsedMinutes++;
 
-                    if (ElapsedMinutes==1)
-                    {
-                        if (!TimeVibrated)
-                        {
-                            try
-                            {
-                                // Use default vibration length
-                                Vibration.Vibrate();
-                                Application.Current.MainPage.DisplayAlert("Stage 4 Violation", "You have traveled for more than one hour", "Ok");
-
-                                // Or use specified time
-                                var duration = TimeSpan.FromSeconds(1);
-                                Vibration.Vibrate(duration);
-                                TimeVibrated = true;
-                                TimeBorderColor = Color.OrangeRed;
-                            }
-                            catch (FeatureNotSupportedException ex)
-                            {
-                                // Feature not supported on device
-                            }
-                            catch (Exception ex)
-                            {
-                                // Other error has occurred.
-                            }
-                        }
-                    }
+                    //if (ElapsedMinutes==1)
+                    //{
+                    //    if (!TimeVibrated)
+                    //    {
+                    //        try
+                    //        {
+                    //            // Use default vibration length
+                    //            //Vibration.Vibrate();
+                    //            NotifyLockdownViolation(ViolationType.Time);
+                    //            TimeBorderColor = Color.OrangeRed;
+                    //        }
+                    //        catch (FeatureNotSupportedException ex)
+                    //        {
+                    //            // Feature not supported on device
+                    //        }
+                    //        catch (Exception ex)
+                    //        {
+                    //            // Other error has occurred.
+                    //        }
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -390,6 +438,39 @@ namespace StayAtHome.ViewModels
             }
 
             
+        }
+
+        private void NotifyLockdownViolation(ViolationType violationType)
+        {
+            var description = "";
+            if (violationType == ViolationType.Distance)
+            {
+                description = "You have traveled for more than 5 km's";
+                Application.Current.MainPage.DisplayAlert("Stage 4 Violation",description , "Ok");
+                TimeVibrated = true;
+            }
+            else
+            {
+                description = "You have traveled for more than one hour";
+                Application.Current.MainPage.DisplayAlert("Stage 4 Violation",description , "Ok");
+                DistanceVibrated = true;
+            }
+            
+            // Or use specified time
+            var duration = TimeSpan.FromSeconds(2);
+            Vibration.Vibrate(duration);
+
+            //var notification = new NotificationRequest
+            //{
+            //    NotificationId = 100,
+            //    Title = "Stage 4 violation",
+            //    Description = description,
+            //    ReturningData = "Dummy data", // Returning data when tapped on notification.
+            //    NotifyTime = DateTime.Now.AddSeconds(30) // Used for Scheduling local notification, if not specified notification will show immediately.
+            //};
+            //NotificationCenter.Current.Show(notification);
+
+            SendNotification("Stage 4 Violation",description);
         }
 
         private void DisplayInMaps()
@@ -459,14 +540,7 @@ namespace StayAtHome.ViewModels
                 {
                     try
                     {
-                        // Use default vibration length
-                        Vibration.Vibrate();
-                        Application.Current.MainPage.DisplayAlert("Stage 4 Violation", "You have traveled more than 5 kilometers", "Ok");
-
-                        // Or use specified time
-                        var duration = TimeSpan.FromSeconds(1);
-                        Vibration.Vibrate(duration);
-                        DistanceVibrated = true;
+                        NotifyLockdownViolation(ViolationType.Distance);
 
                         if (DistanceBorderColor != Color.OrangeRed)
                         {

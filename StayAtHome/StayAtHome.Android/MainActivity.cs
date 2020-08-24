@@ -8,13 +8,16 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using ButtonCircle.FormsPlugin.Droid;
+using Plugin.LocalNotification;
 using StayAtHome.Droid.Services;
+using StayAtHome.Droid.Services.Dependency;
+using StayAtHome.Helpers;
 using StayAtHome.Messages;
 using Xamarin.Forms;
 
 namespace StayAtHome.Droid
 {
-    [Activity(Label = "StayAtHome", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "StayAtHome", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.SingleTop)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -35,7 +38,13 @@ namespace StayAtHome.Droid
             string folderPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string fullPath = Path.Combine(folderPath, dbName);
 
+
+            
+            
             LoadApplication(new App(fullPath));
+
+            //for local notifications
+            CreateNotificationFromIntent(Intent);
 
             MessagingCenter.Subscribe<StartLongRunningTaskMessage>(this, "StartLongRunningTaskMessage", message => {
                 var intent = new Intent(this, typeof(LongRunningTaskService));
@@ -47,11 +56,28 @@ namespace StayAtHome.Droid
                 StopService(intent);
             });
         }
+
+        protected override void OnNewIntent(Intent intent)
+        {
+            CreateNotificationFromIntent(intent);
+        }
+
+        void CreateNotificationFromIntent(Intent intent)
+        {
+            if (intent?.Extras != null)
+            {
+                string title = intent.Extras.GetString(AndroidNotificationManager.TitleKey);
+                string message = intent.Extras.GetString(AndroidNotificationManager.MessageKey);
+                DependencyService.Get<INotificationManager>().ReceiveNotification(title, message);
+            }
+        }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+
+
     }
 }
