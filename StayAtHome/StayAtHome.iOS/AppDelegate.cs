@@ -4,7 +4,10 @@ using System.IO;
 using System.Linq;
 using ButtonCircle.FormsPlugin.iOS;
 using Foundation;
+using StayAtHome.iOS.Services;
+using StayAtHome.Messages;
 using UIKit;
+using Xamarin.Forms;
 
 namespace StayAtHome.iOS
 {
@@ -34,7 +37,21 @@ namespace StayAtHome.iOS
 
             LoadApplication(new App(fullPath));
 
+            WireUpLongRunningTask(); //backgrounding the start and stop journey
+
             return base.FinishedLaunching(app, options);
+        }
+        iOSLongRunningTaskExample longRunningTaskExample;
+        void WireUpLongRunningTask()
+        {
+            MessagingCenter.Subscribe<StartLongRunningTaskMessage>(this, "StartLongRunningTaskMessage", async message => {
+                longRunningTaskExample = new iOSLongRunningTaskExample();
+                await longRunningTaskExample.Start();
+            });
+
+            MessagingCenter.Subscribe<StopLongRunningTaskMessage>(this, "StopLongRunningTaskMessage", message => {
+                longRunningTaskExample.Stop();
+            });
         }
     }
 }
