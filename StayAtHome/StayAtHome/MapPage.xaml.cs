@@ -69,5 +69,10 @@ namespace StayAtHome
             CrossToastPopUp.Current.ShowToastMessage("Setting a new address will overwrite the current address");
             Navigation.PushAsync(new SearchPage());
         }
+
+        private void SettingsButton_OnClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new SettingsPage());
+        }
     }
 }

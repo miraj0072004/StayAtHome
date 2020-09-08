@@ -1,4 +1,5 @@
 ﻿using System;
+using StayAtHome.Helpers;
 using StayAtHome.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -23,6 +24,14 @@ namespace StayAtHome
 
             //MainPage = new NavigationPage(new MainPage());
             MainPage = new NavigationPage(new MapPage());
+            if (Settings.TimeRestriction == "")
+            {
+                Settings.TimeRestriction = "2";
+            }
+            if (Settings.DistanceRestriction == "")
+            {
+                Settings.DistanceRestriction = "5";
+            }
             DatabaseLocation = databaseLocation;
         }
 

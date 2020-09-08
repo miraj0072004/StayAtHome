@@ -77,6 +77,30 @@ namespace StayAtHome.Helpers
             }
         }
 
+        public static string TimeRestriction
+        {
+            get
+            {
+                return AppSettings.GetValueOrDefault("TimeRestriction", "");
+            }
+            set
+            {
+                AppSettings.AddOrUpdateValue("TimeRestriction", value);
+            }
+        }
+
+        public static string DistanceRestriction
+        {
+            get
+            {
+                return AppSettings.GetValueOrDefault("DistanceRestriction", "");
+            }
+            set
+            {
+                AppSettings.AddOrUpdateValue("DistanceRestriction", value);
+            }
+        }
+
 
 
     }

@@ -82,12 +82,12 @@
                 </local:CircleButton>
 
                 <StackLayout VerticalOptions="Center" Grid.Column="2">
-                    <local:CircleButton x:Name="exitButton"
+                    <local:CircleButton x:Name="settingsButton"
                                         FontIcon="FontAwesome"
                                         CornerRadius="30"
-                                        Icon="fa-sign-out"
-                                        Text="Address"      
+                                        Icon="fa-gear"
                                         HorizontalOptions="Center"
+                                        Clicked="SettingsButton_OnClicked"
                                         VerticalOptions="Center"></local:CircleButton>
                 </StackLayout>
                 
