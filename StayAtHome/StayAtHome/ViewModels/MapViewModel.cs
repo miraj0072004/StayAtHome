@@ -14,6 +14,7 @@ using StayAtHome.Messages;
 using StayAtHome.Models;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.Maps;
 using Map = Xamarin.Forms.Maps.Map;
 
 
@@ -530,16 +531,31 @@ namespace StayAtHome.ViewModels
             try
             {
                 var position = new Xamarin.Forms.Maps.Position(ChosenLocation.Latitude, ChosenLocation.Longitude);
+                var distanceRestrictionInMeters = double.Parse(Settings.DistanceRestriction)*1000;
 
                 var pin = new Xamarin.Forms.Maps.Pin
                 {
                     Type = Xamarin.Forms.Maps.PinType.SavedPin,
                     Position = position,
-                    Label = ChosenLocation.Name,
+                    Label = "Home",
                     Address = ChosenLocation.Address
                 };
 
                 LocationMap.Pins.Add(pin);
+
+                Circle circle = new Circle
+                {
+                    Center = position,
+                    Radius = new Distance(distanceRestrictionInMeters),
+                    //StrokeColor = Color.FromHex("#88FF0000"),
+                    StrokeColor = Color.FromHex("#8800FF00"),
+                    StrokeWidth = 4,
+                    //FillColor = Color.FromHex("#88FFC0CB")
+                    FillColor = Color.FromHex("#88C0FFCB")
+
+                };
+
+                LocationMap.MapElements.Add(circle);
             }
             catch (NullReferenceException nre)
             {
