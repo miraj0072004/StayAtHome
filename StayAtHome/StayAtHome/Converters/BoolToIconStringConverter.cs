@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace StayAtHome.Converters
 {
-    public class DoubleToIconStringConverter : IValueConverter
+    public class BoolToIconStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

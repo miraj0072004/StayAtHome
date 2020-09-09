@@ -1,15 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
+using StayAtHome.Annotations;
 using StayAtHome.Helpers;
 
 namespace StayAtHome.ViewModels
 {
-    public class SettingsViewModel
+    public class SettingsViewModel: INotifyPropertyChanged
     {
         private double _distanceRestriction;
-        private readonly double _timeRestriction;
+        private double _timeRestriction;
+
+        public double TimeRestriction
+        {
+            get => _timeRestriction;
+            set
+            {
+                _timeRestriction = value;
+                Settings.TimeRestriction = _timeRestriction.ToString();
+                OnPropertyChanged();
+
+            }
+        }
 
         public SettingsViewModel()
         {
@@ -20,9 +35,21 @@ namespace StayAtHome.ViewModels
         public double DistanceRestriction
         {
             get => _distanceRestriction;
-            set => _distanceRestriction = value;
+            set
+            {
+                _distanceRestriction = value;
+                Settings.DistanceRestriction = _distanceRestriction.ToString();
+                OnPropertyChanged();
+            }
         }
 
-        public double TimeRestriction => _timeRestriction;
+        
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

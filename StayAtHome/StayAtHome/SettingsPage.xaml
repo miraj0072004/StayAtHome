@@ -9,11 +9,16 @@
     <ContentPage.Content>
         <StackLayout>
             <StackLayout VerticalOptions="EndAndExpand" HorizontalOptions="CenterAndExpand">
-                <Label Text="{Binding DistanceRestriction}"
-                       FontSize="50"
-                       HorizontalOptions="Center"></Label>
+                
+
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                    <Label Text="{Binding DistanceRestriction}"
+                           FontSize="50"
+                           HorizontalOptions="End"></Label>
+                    <Label Text="km" HorizontalOptions="Start"></Label>
+                </StackLayout>
                 <Stepper x:Name="distanceRestrictionStepper"
-                         
+                         Value="{Binding DistanceRestriction, Mode=TwoWay}"
                          Minimum="1"
                          Maximum="20"
                          >
@@ -22,11 +27,15 @@
             </StackLayout>
 
             <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
-                <Label Text="{Binding TimeRestriction}"
-                       FontSize="50"
-                       HorizontalOptions="Center"></Label>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                    <Label Text="{Binding TimeRestriction}"
+                           FontSize="50"
+                           HorizontalOptions="End"></Label>
+                    <Label Text="hours" HorizontalOptions="Start"></Label>
+                </StackLayout>
                 <Stepper x:Name="timeRestrictionStepper"
-                         
+                         Increment="0.5"
+                         Value="{Binding TimeRestriction,Mode=TwoWay}"
                          Minimum="1"
                          Maximum="20"
                 >

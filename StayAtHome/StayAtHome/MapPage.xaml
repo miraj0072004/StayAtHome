@@ -13,7 +13,7 @@
         <ResourceDictionary>
             <converters:IntToTimeStringConverter x:Key="IntToTimeString"/>
             <converters:DoubleToDistanceStringConverter x:Key="DoubleToDistanceString"/>
-            <converters:DoubleToIconStringConverter x:Key="DoubleToIconString"/>
+            <converters:BoolToIconStringConverter x:Key="BoolToIconString"/>
 
             <Style TargetType="Label">
                 <Setter Property="FontSize" Value="20"></Setter>
@@ -73,7 +73,7 @@
                 <local:CircleButton
                     FontIcon="FontAwesome"
                     FontSize="30"
-                    Icon="{Binding JourneyOngoing, Converter={StaticResource DoubleToIconString}}"
+                    Icon="{Binding JourneyOngoing, Converter={StaticResource BoolToIconString}}"
                     Grid.Column="1" 
                     x:Name="StartJourneyButton"
                     CornerRadius="30"

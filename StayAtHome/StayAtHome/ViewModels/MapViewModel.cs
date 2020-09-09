@@ -52,6 +52,8 @@ namespace StayAtHome.ViewModels
         private Color _distanceBorderColor;
         private double _elapsedDistanceMeters = 0;
         private bool _journeyOngoing;
+        private int totalSeconds;
+
         INotificationManager notificationManager;
 
 
@@ -263,6 +265,7 @@ namespace StayAtHome.ViewModels
         private void ResetTimerAndDistance()
         {
             ElapsedHours = ElapsedMinutes = ElapsedSeconds = 0;
+            totalSeconds = 0;
             ElapsedDistanceMeters = 0;
             DistanceBorderColor = TimeBorderColor = Color.Black;
         }
@@ -358,47 +361,47 @@ namespace StayAtHome.ViewModels
             if (ElapsedSeconds < 59)
             {
                 ElapsedSeconds++;
-                if (TimeBorderColor != Color.OrangeRed)
-                {
-                    if (ElapsedSeconds < 6)
-                    {
-                        if (TimeBorderColor != Color.YellowGreen)
-                        {
-                            TimeBorderColor = Color.YellowGreen;
-                        }
-                    }
-                    else
-                    {
-                        if (TimeBorderColor != Color.Yellow || TimeBorderColor != Color.OrangeRed)
-                        {
-                            TimeBorderColor = Color.Yellow;
-                        }
-                    }
-                }
+                //if (TimeBorderColor != Color.OrangeRed)
+                //{
+                //    if (ElapsedSeconds < 6)
+                //    {
+                //        if (TimeBorderColor != Color.YellowGreen)
+                //        {
+                //            TimeBorderColor = Color.YellowGreen;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        if (TimeBorderColor != Color.Yellow || TimeBorderColor != Color.OrangeRed)
+                //        {
+                //            TimeBorderColor = Color.Yellow;
+                //        }
+                //    }
+                //}
 
-                if (ElapsedSeconds == 10)
-                {
-                    if (!TimeVibrated)
-                    {
-                        try
-                        {
-                            // Use default vibration length
-                            //Vibration.Vibrate();
-                            NotifyLockdownViolation(ViolationType.Time);
-                            TimeBorderColor = Color.OrangeRed;
-                        }
-                        catch (FeatureNotSupportedException ex)
-                        {
-                            // Feature not supported on device
-                        }
-                        catch (Exception ex)
-                        {
-                            // Other error has occurred.
-                        }
-                    }
-                }
+                //if (ElapsedSeconds == 10)
+                //{
+                //    if (!TimeVibrated)
+                //    {
+                //        try
+                //        {
+                //            // Use default vibration length
+                //            //Vibration.Vibrate();
+                //            NotifyLockdownViolation(ViolationType.Time);
+                //            TimeBorderColor = Color.OrangeRed;
+                //        }
+                //        catch (FeatureNotSupportedException ex)
+                //        {
+                //            // Feature not supported on device
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            // Other error has occurred.
+                //        }
+                //    }
+                //}
 
-                
+
             }
             else
             {
@@ -437,7 +440,55 @@ namespace StayAtHome.ViewModels
                 }
             }
 
-            
+            totalSeconds++;
+            CheckTimeViolation();
+
+        }
+
+        private void CheckTimeViolation()
+        {
+            var timeRestriction = double.Parse(Settings.TimeRestriction) * 60;
+
+            if (totalSeconds < timeRestriction*0.8)
+            {
+                if (TimeBorderColor != Color.YellowGreen)
+                {
+                    TimeBorderColor = Color.YellowGreen;
+                }
+            }
+            else if (totalSeconds >= timeRestriction * 0.8 && totalSeconds < timeRestriction)
+            {
+                if (TimeBorderColor != Color.Gold)
+                {
+                    TimeBorderColor = Color.Gold;
+                }
+            }
+            else
+            {
+                if (TimeBorderColor != Color.OrangeRed)
+                {
+                    TimeBorderColor=Color.OrangeRed;
+
+                    if (!TimeVibrated)
+                    {
+                        try
+                        {
+                            // Use default vibration length
+                            //Vibration.Vibrate();
+                            NotifyLockdownViolation(ViolationType.Time);
+                            
+                        }
+                        catch (FeatureNotSupportedException ex)
+                        {
+                            // Feature not supported on device
+                        }
+                        catch (Exception ex)
+                        {
+                            // Other error has occurred.
+                        }
+                    }
+                }
+            }
         }
 
         private void NotifyLockdownViolation(ViolationType violationType)
@@ -527,7 +578,14 @@ namespace StayAtHome.ViewModels
             
 
 
-            if (ElapsedDistanceMeters > 100)
+            CheckDistanceViolation();
+        }
+
+        private void CheckDistanceViolation()
+        {
+            var distanceRestriction = double.Parse(Settings.DistanceRestriction) * 1000;
+
+            if (ElapsedDistanceMeters > distanceRestriction)
             {
                 //var reply = DisplayAlert("Moved", "Moved more than 25 meters", "Ok");
 
@@ -564,7 +622,7 @@ namespace StayAtHome.ViewModels
                     DistanceVibrated = false;
                 }
 
-                if (ElapsedDistanceMeters < 80)
+                if (ElapsedDistanceMeters < distanceRestriction*0.8)
                 {
                     if (DistanceBorderColor != Color.YellowGreen)
                     {
@@ -573,9 +631,9 @@ namespace StayAtHome.ViewModels
                 }
                 else
                 {
-                    if (DistanceBorderColor != Color.Yellow)
+                    if (DistanceBorderColor != Color.Gold)
                     {
-                        DistanceBorderColor = Color.Yellow;
+                        DistanceBorderColor = Color.Gold;
                     }
                 }
             }
